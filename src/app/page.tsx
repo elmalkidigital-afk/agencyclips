@@ -21,7 +21,10 @@ import {
   Play,
   User,
   Check,
-  Palette
+  Palette,
+  Type,
+  Minus,
+  Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -61,6 +64,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { generateHadith } from '@/ai/flows/generate-hadith';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
@@ -74,12 +78,22 @@ type Content = {
 type Category = 'hadith' | 'ramadan' | 'recherche-ia' | 'coran';
 type Format = 'story' | 'square';
 type TextTheme = 'gradient' | 'white';
+type FontFamily = 'roboto' | 'playfair' | 'amiri' | 'naskh';
+
+const fontFamilies: Record<FontFamily, { name: string; style: string; label: string }> = {
+  roboto: { name: 'Roboto', style: "'Roboto', sans-serif", label: 'Moderne' },
+  playfair: { name: 'Playfair Display', style: "'Playfair Display', serif", label: 'Élégante' },
+  amiri: { name: 'Amiri', style: "'Amiri', serif", label: 'Calligraphie' },
+  naskh: { name: 'Noto Naskh Arabic', style: "'Noto Naskh Arabic', serif", label: 'Orientale' },
+};
 
 export default function Home() {
   const [content, setContent] = useState<Content | null>(null);
   const [category, setCategory] = useState<Category>('hadith');
   const [format, setFormat] = useState<Format>('story');
   const [textTheme, setTextTheme] = useState<TextTheme>('gradient');
+  const [fontSize, setFontSize] = useState(24);
+  const [fontFamily, setFontFamily] = useState<FontFamily>('roboto');
   const [background, setBackground] = useState<string>(
     PlaceHolderImages[0]?.imageUrl || 'https://picsum.photos/seed/1/1080/1920'
   );
@@ -512,6 +526,58 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
+                  <Type className="text-primary" />
+                  Typographie
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <RadioGroup
+                  defaultValue="roboto"
+                  className="grid grid-cols-2 gap-3"
+                  onValueChange={(value: string) => setFontFamily(value as FontFamily)}
+                >
+                  {(Object.entries(fontFamilies) as [FontFamily, typeof fontFamilies[FontFamily]][]).map(([key, font]) => (
+                    <div key={key}>
+                      <RadioGroupItem value={key} id={`font-${key}`} className="peer sr-only" />
+                      <Label
+                        htmlFor={`font-${key}`}
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                      >
+                        <span className="mb-2 text-lg" style={{ fontFamily: font.style }}>Aa</span>
+                        <span className="text-xs">{font.label}</span>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Taille du texte</span>
+                    <span className="text-sm font-medium">{fontSize}px</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(s => Math.max(14, s - 2))}>
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <Slider
+                      value={[fontSize]}
+                      onValueChange={(v) => setFontSize(v[0])}
+                      min={14}
+                      max={48}
+                      step={1}
+                      className="flex-1"
+                    />
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(s => Math.min(48, s + 2))}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
                   <AtSign className="text-primary" />
                   Signature
                 </CardTitle>
@@ -612,7 +678,7 @@ export default function Home() {
                     className="absolute inset-0 flex items-center justify-center p-8"
                   >
                     <div className="text-center w-full max-w-4xl">
-                      <div className="text-2xl sm:text-4xl font-extrabold leading-tight tracking-tight px-4">
+                      <div className="font-extrabold leading-tight tracking-tight px-4" style={{ fontSize: `${fontSize}px`, fontFamily: fontFamilies[fontFamily].style }}>
                         <AnimatePresence mode="wait">
                           <motion.div
                             key={animationKey + content.content}

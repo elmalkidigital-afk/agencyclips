@@ -1,10 +1,10 @@
 {
   "placeholderImages": [
     {
-      "id": "nature-1",
-      "description": "A serene forest path.",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1080",
-      "imageHint": "nature forest"
+      "id": "hikma-default",
+      "description": "HikmaClips default background.",
+      "imageUrl": "https://res.cloudinary.com/db2ljqpdt/image/upload/v1769944784/grok_image_1769332087344_mgthkt.jpg",
+      "imageHint": "islamic art"
     },
     {
       "id": "islamic-1",
