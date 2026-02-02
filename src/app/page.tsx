@@ -20,7 +20,8 @@ import {
   AtSign,
   Play,
   User,
-  Check
+  Check,
+  Palette
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -72,11 +73,13 @@ type Content = {
 
 type Category = 'hadith' | 'ramadan' | 'recherche-ia' | 'coran';
 type Format = 'story' | 'square';
+type TextTheme = 'gradient' | 'white';
 
 export default function Home() {
   const [content, setContent] = useState<Content | null>(null);
   const [category, setCategory] = useState<Category>('hadith');
   const [format, setFormat] = useState<Format>('story');
+  const [textTheme, setTextTheme] = useState<TextTheme>('gradient');
   const [background, setBackground] = useState<string>(
     PlaceHolderImages[0]?.imageUrl || 'https://picsum.photos/seed/1/1080/1920'
   );
@@ -472,6 +475,43 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
+                  <Palette className="text-primary" />
+                  Couleur du texte
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  defaultValue="gradient"
+                  className="grid grid-cols-2 gap-4"
+                  onValueChange={(value: string) => setTextTheme(value as TextTheme)}
+                >
+                  <div>
+                    <RadioGroupItem value="gradient" id="theme-gradient" className="peer sr-only" />
+                    <Label
+                      htmlFor="theme-gradient"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                    >
+                      <span className="mb-3 text-lg font-bold text-hikma-gradient">Aa</span>
+                      TikTok
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem value="white" id="theme-white" className="peer sr-only" />
+                    <Label
+                      htmlFor="theme-white"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                    >
+                      <span className="mb-3 text-lg font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">Aa</span>
+                      Blanc
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
                   <AtSign className="text-primary" />
                   Signature
                 </CardTitle>
@@ -598,7 +638,7 @@ export default function Home() {
                                 }}
                                 className={cn(
                                   "inline-block mr-2",
-                                  user ? "text-hikma-gradient" : "text-white"
+                                  textTheme === 'white' ? "text-white" : (user ? "text-hikma-gradient" : "text-white")
                                 )}
                               >
                                 {word}
