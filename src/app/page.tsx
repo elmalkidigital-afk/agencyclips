@@ -255,7 +255,7 @@ export default function Home() {
       const dataUrl = canvas.toDataURL('image/png');
 
       const link = document.createElement('a');
-      link.download = `hikmatips_${category}_${Date.now()}.png`;
+      link.download = `hikmaclips_${category}_${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
 
@@ -301,7 +301,7 @@ export default function Home() {
 
       await Share.share({
         title: 'Ma Hikma du jour',
-        text: `Découvrez cette sagesse sur HikmaTips : "${content.content}" - ${content.source}`,
+        text: `Découvrez cette sagesse sur HikmaClips : "${content.content}" - ${content.source}`,
         files: [savedFile.uri],
         dialogTitle: 'Partager avec...',
       });
@@ -327,7 +327,7 @@ export default function Home() {
     <div className="min-h-screen w-full bg-background flex flex-col">
       <header className="border-b">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
-          <h1 className="text-xl font-bold text-hikma-gradient italic">HikmaTips</h1>
+          <h1 className="text-xl font-bold text-hikma-gradient italic">HikmaClips</h1>
           <div className="flex items-center gap-4">
             {isUserLoading ? (
               <Loader2 className="animate-spin" />
@@ -729,7 +729,7 @@ export default function Home() {
             <a href="/terms-of-service" className="hover:text-primary transition-colors">Conditions d'Utilisation</a>
           </div>
           <p className="mb-2">
-            © {new Date().getFullYear()} HikmaTips · Créé par{' '}
+            © {new Date().getFullYear()} HikmaClips · Créé par{' '}
             <a
               href="http://web-linecreator.fr"
               target="_blank"
@@ -769,7 +769,7 @@ export default function Home() {
               <Sparkles className="h-8 w-8 text-primary animate-pulse" />
             </div>
             <AlertDialogTitle className="text-2xl text-center font-bold">
-              Bienvenue sur <span className="text-hikma-gradient italic">HikmaTips</span> ! 🎨
+              Bienvenue sur <span className="text-hikma-gradient italic">HikmaClips</span> ! 🎨
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center pt-2">
               Prêt à créer des images inspirantes pour vos réseaux sociaux ?

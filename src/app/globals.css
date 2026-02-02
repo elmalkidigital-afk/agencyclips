@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* 🎨 HikmaTips Color System - Rose + Cyan */
+    /* 🎨 HikmaClips Color System - Rose + Cyan */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -242,7 +242,7 @@
   display: inline-block;
 }
 
-/* HikmaTips brand gradient (Rose → Cyan) */
+/* HikmaClips brand gradient (Rose → Cyan) */
 .text-hikma-gradient {
   background: linear-gradient(135deg, #ff0050, #00f2ea);
   -webkit-background-clip: text;
