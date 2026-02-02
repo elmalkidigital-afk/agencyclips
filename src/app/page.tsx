@@ -91,7 +91,7 @@ export default function Home() {
   const [content, setContent] = useState<Content | null>(null);
   const [category, setCategory] = useState<Category>('hadith');
   const [format, setFormat] = useState<Format>('story');
-  const [textTheme, setTextTheme] = useState<TextTheme>('gradient');
+  const [textTheme, setTextTheme] = useState<TextTheme>('white');
   const [fontSize, setFontSize] = useState(24);
   const [fontFamily, setFontFamily] = useState<FontFamily>('roboto');
   const [background, setBackground] = useState<string>(
@@ -495,7 +495,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  defaultValue="gradient"
+                  defaultValue="white"
                   className="grid grid-cols-2 gap-4"
                   onValueChange={(value: string) => setTextTheme(value as TextTheme)}
                 >

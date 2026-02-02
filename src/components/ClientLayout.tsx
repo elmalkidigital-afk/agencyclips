@@ -1,23 +1,22 @@
 'use client';
 
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { Home, BookOpen, Share2, User, Settings } from 'lucide-react';
 
 const navItems = [
   { label: 'Accueil', icon: <Home size={22} />, href: '/' },
-  { label: 'Ressources', icon: <BookOpen size={22} />, href: '/' },
-  { label: 'Partager', icon: <Share2 size={22} />, href: '/' },
-  { label: 'Profil', icon: <User size={22} />, href: '/' },
-  { label: 'Paramètres', icon: <Settings size={22} />, href: '/' },
+  { label: 'Ressources', icon: <BookOpen size={22} />, href: '/ressources' },
+  { label: 'Partager', icon: <Share2 size={22} />, href: '/partager' },
+  { label: 'Profil', icon: <User size={22} />, href: '/profil' },
+  { label: 'Paramètres', icon: <Settings size={22} />, href: '/parametres' },
 ];
 
 const HIDDEN_PATHS = ['/privacy-policy', '/terms-of-service'];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
-  const [activeNav, setActiveNav] = useState('Accueil');
   const pathname = usePathname();
+  const activeNav = navItems.find(item => item.href === pathname)?.label || 'Accueil';
 
   const showNav = !HIDDEN_PATHS.includes(pathname);
 
@@ -30,7 +29,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         <BottomNavigation
           items={navItems}
           active={activeNav}
-          onItemClick={setActiveNav}
         />
       )}
     </>
