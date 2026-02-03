@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 export default function ParametresPage() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [hdExport, setHdExport] = useState(true);
 
   const toggleDarkMode = (enabled: boolean) => {
@@ -88,7 +88,7 @@ export default function ParametresPage() {
           <CardContent className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Version</span>
-              <span className="font-medium">1.0.2</span>
+              <span className="font-medium">1.0.3</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Développeur</span>
