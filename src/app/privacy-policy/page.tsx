@@ -40,7 +40,7 @@ export default function PrivacyPolicy() {
             Avoir des informations précises sur vous nous permet de vous offrir une expérience fluide, efficace et personnalisée. Plus précisément, nous pouvons utiliser les informations collectées à votre sujet via l'application pour :
           </p>
           <ul>
-            <li>Créer et gérer votre compte.</li>
+            <li>Gérer votre compte et vos préférences.</li>
             <li>Vous permettre une interaction utilisateur-à-utilisateur (fonctionnalité future).</li>
             <li>Améliorer le fonctionnement et l'expérience de l'application.</li>
             <li>Compiler des données statistiques anonymes pour une utilisation interne.</li>

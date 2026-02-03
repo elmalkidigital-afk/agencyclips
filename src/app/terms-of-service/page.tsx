@@ -24,7 +24,7 @@ export default function TermsOfService() {
 
           <h2>2. Utilisation de l'application</h2>
           <p>
-            HikmaClips vous fournit des outils pour créer du contenu visuel pour les médias sociaux. Vous êtes responsable du contenu que vous créez et partagez. Vous acceptez de ne pas utiliser l'application pour créer du contenu illégal, haineux, diffamatoire ou qui enfreint les droits d'autrui.
+            HikmaClips vous fournit des outils pour générer du contenu visuel pour les médias sociaux. Vous êtes responsable du contenu que vous générez et partagez. Vous acceptez de ne pas utiliser l'application pour produire du contenu illégal, haineux, diffamatoire ou qui enfreint les droits d'autrui.
           </p>
           <p>
             Vous ne pouvez pas utiliser le service à des fins illégales ou non autorisées. Vous acceptez de vous conformer à toutes les lois, règles et réglementations applicables à votre utilisation du Service.
@@ -32,7 +32,7 @@ export default function TermsOfService() {
 
           <h2>3. Comptes d'utilisateurs</h2>
           <p>
-            Lorsque vous créez un compte chez nous via l'authentification Google, vous devez nous fournir des informations exactes, complètes et à jour. Le non-respect de cette obligation constitue une violation des Conditions, qui peut entraîner la résiliation immédiate de votre compte sur notre service.
+            Lorsque vous ouvrez un compte chez nous via l'authentification Google, vous devez nous fournir des informations exactes, complètes et à jour. Le non-respect de cette obligation constitue une violation des Conditions, qui peut entraîner la résiliation immédiate de votre compte sur notre service.
           </p>
           
           <h2>4. Propriété intellectuelle</h2>

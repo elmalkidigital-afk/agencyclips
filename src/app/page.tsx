@@ -20,7 +20,6 @@ import {
   AtSign,
   Play,
   User,
-  Check,
   Palette,
   Type,
   Minus,
@@ -68,6 +67,7 @@ import { Slider } from '@/components/ui/slider';
 import { generateHadith } from '@/ai/flows/generate-hadith';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import OnboardingScreen from '@/components/OnboardingScreen';
 
 
 type Content = {
@@ -103,21 +103,23 @@ export default function Home() {
   const [creatorSignature, setCreatorSignature] = useState('@Hikmaclips');
   const [generationCount, setGenerationCount] = useState(0);
   const [showSignInPopup, setShowSignInPopup] = useState(false);
-  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-    if (!hasSeenWelcome) {
-      const timer = setTimeout(() => {
-        setShowWelcomePopup(true);
-      }, 1500); // Petit délai pour laisser l'animation d'entrée se faire
-      return () => clearTimeout(timer);
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
     }
   }, []);
 
-  const handleCloseWelcome = () => {
-    localStorage.setItem('hasSeenWelcome', 'true');
-    setShowWelcomePopup(false);
+  const handleCompleteOnboarding = () => {
+    localStorage.setItem('hasSeenOnboarding', 'true');
+    setShowOnboarding(false);
+  };
+
+  const handleSignInFromOnboarding = async () => {
+    await handleSignIn();
+    handleCompleteOnboarding();
   };
 
   const previewRef = useRef<HTMLDivElement>(null);
@@ -339,6 +341,15 @@ export default function Home() {
       setIsGenerating(false);
     }
   }, [content, toast]);
+
+  if (showOnboarding) {
+    return (
+      <OnboardingScreen
+        onComplete={handleCompleteOnboarding}
+        onSignIn={handleSignInFromOnboarding}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-background flex flex-col">
@@ -859,7 +870,7 @@ export default function Home() {
           <AlertDialogHeader>
             <AlertDialogTitle>Inscrivez-vous pour continuer</AlertDialogTitle>
             <AlertDialogDescription>
-              Vous avez atteint la limite de 5 générations en tant qu'invité. Créez un compte gratuit pour profiter de la génération illimitée et gratuite, et bientôt, pour sauvegarder vos créations !
+              Vous avez atteint la limite de 5 générations en tant qu'invité. Inscrivez-vous gratuitement pour profiter de générations illimitées et sauvegarder vos images !
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -871,54 +882,6 @@ export default function Home() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <AlertDialog open={showWelcomePopup} onOpenChange={setShowWelcomePopup}>
-        <AlertDialogContent className="max-w-md border-none bg-gradient-to-b from-card to-background shadow-2xl">
-          <AlertDialogHeader>
-            <div className="mx-auto bg-primary/20 p-3 rounded-full mb-2 w-fit">
-              <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-            </div>
-            <AlertDialogTitle className="text-2xl text-center font-bold">
-              Bienvenue sur <span className="text-hikma-gradient italic">HikmaClips</span> ! 🎨
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-center pt-2">
-              Prêt à créer des images inspirantes pour vos réseaux sociaux ?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="py-6 space-y-4">
-            <p className="font-semibold text-foreground text-center mb-4">
-              🎁 Pourquoi créer un compte (Gratuit) ?
-            </p>
-            <div className="grid gap-3">
-              {[
-                { title: "Générations Illimitées", desc: "Plus aucune limite quotidienne !" },
-                { title: "Styles Premium", desc: "Accès aux styles premium exclusifs" },
-                { title: "Signature Perso", desc: "Votre propre @pseudo sur l'image" },
-                { title: "C'est 100% Gratuit", desc: "Et ça le restera toujours InshaAllah" },
-              ].map((benefit, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-primary/10 border border-border/50">
-                  <div className="mt-1 bg-primary/20 p-1 rounded-full">
-                    <Check className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm">{benefit.title}</h4>
-                    <p className="text-xs text-muted-foreground">{benefit.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
-
-          <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={handleCloseWelcome}
-              className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 font-bold py-6 text-lg"
-            >
-              C'est parti ! 🚀
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
   );
 }
