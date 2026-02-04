@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GEMINI_API_KEY } from '@/config/api-keys';
 
 const categoryLabels = {
   hadith: 'Hadith',
@@ -25,11 +26,11 @@ export async function generateHadith(
   const { category, topic } = input;
   const label = categoryLabels[category as keyof typeof categoryLabels] || category;
 
-  // Use NEXT_PUBLIC_ for client-side access in static export
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENAI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
+  // Use imported API key for static export compatibility
+  const apiKey = GEMINI_API_KEY;
 
-  if (!apiKey || apiKey === 'VOTRE_CLE_API_ICI') {
-    throw new Error("Clé API Gemini manquante. Veuillez configurer NEXT_PUBLIC_GOOGLE_GENAI_API_KEY.");
+  if (!apiKey) {
+    throw new Error("Clé API Gemini manquante.");
   }
 
   // Prompts spécifiques par catégorie pour de meilleurs résultats

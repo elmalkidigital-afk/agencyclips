@@ -11,13 +11,21 @@ import {
   Moon,
   BookOpen,
   Search,
+  RectangleVertical,
+  RectangleHorizontal,
   BookMarked,
   LogIn,
   LogOut,
   Share2,
+  AtSign,
   Play,
   User,
-  Mail
+  Palette,
+  Type,
+  Minus,
+  Plus,
+  Mail,
+  Wand2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -33,6 +41,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import html2canvas from 'html2canvas';
+import { cn } from '@/lib/utils';
 import { useAuth, useUser } from '@/firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import {
@@ -55,10 +64,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { generateHadith } from '@/ai/flows/generate-hadith';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import OnboardingScreen from '@/components/OnboardingScreen';
 
 
 type Content = {
@@ -67,40 +76,33 @@ type Content = {
 };
 
 type Category = 'hadith' | 'ramadan' | 'recherche-ia' | 'coran';
+type Format = 'story' | 'square';
+type TextTheme = 'gradient' | 'white';
+type FontFamily = 'roboto' | 'playfair' | 'amiri' | 'naskh';
 
-export default function Home() {
+const fontFamilies: Record<FontFamily, { name: string; style: string; label: string }> = {
+  roboto: { name: 'Roboto', style: "'Roboto', sans-serif", label: 'Moderne' },
+  playfair: { name: 'Playfair Display', style: "'Playfair Display', serif", label: 'Élégante' },
+  amiri: { name: 'Amiri', style: "'Amiri', serif", label: 'Calligraphie' },
+  naskh: { name: 'Noto Naskh Arabic', style: "'Noto Naskh Arabic', serif", label: 'Orientale' },
+};
+
+export default function StudioPage() {
   const [content, setContent] = useState<Content | null>(null);
   const [category, setCategory] = useState<Category>('coran');
+  const [format, setFormat] = useState<Format>('story');
+  const [textTheme, setTextTheme] = useState<TextTheme>('white');
+  const [fontSize, setFontSize] = useState(24);
+  const [fontFamily, setFontFamily] = useState<FontFamily>('roboto');
   const [background, setBackground] = useState<string>(
     PlaceHolderImages[0]?.imageUrl || 'https://picsum.photos/seed/1/1080/1920'
   );
   const [animationKey, setAnimationKey] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [topic, setTopic] = useState('');
+  const [creatorSignature, setCreatorSignature] = useState('@Hikmaclips');
   const [generationCount, setGenerationCount] = useState(0);
   const [showSignInPopup, setShowSignInPopup] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  // Fixed values for simplified mode
-  const fontSize = 24;
-  const creatorSignature = '@Hikmaclips';
-
-  useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-    if (!hasSeenOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, []);
-
-  const handleCompleteOnboarding = () => {
-    localStorage.setItem('hasSeenOnboarding', 'true');
-    setShowOnboarding(false);
-  };
-
-  const handleSignInFromOnboarding = async () => {
-    await handleSignIn();
-    handleCompleteOnboarding();
-  };
 
   const previewRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -372,22 +374,13 @@ export default function Home() {
     }
   }, [content, toast]);
 
-  if (showOnboarding) {
-    return (
-      <OnboardingScreen
-        onComplete={handleCompleteOnboarding}
-        onSignIn={handleSignInFromOnboarding}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen w-full bg-background flex flex-col">
       <header className="border-b">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
           <div className="flex items-center gap-2">
-            <Image src="https://res.cloudinary.com/dhjwimevi/image/upload/v1770072891/ChatGPT_Image_2_f%C3%A9vr._2026_23_43_44_edeg9a.png" alt="HikmaClips" width={36} height={36} className="rounded-lg" />
-            <h1 className="text-xl font-bold text-hikma-gradient">HikmaClips</h1>
+            <Wand2 className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold text-hikma-gradient">Studio</h1>
           </div>
           <div className="flex items-center gap-4">
             {isUserLoading ? (
@@ -431,9 +424,8 @@ export default function Home() {
       </header>
       <main className="container mx-auto p-4 sm:p-8 flex-grow">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12">
-          {/* === CONTROLS COLUMN (SIMPLIFIED) === */}
+          {/* === CONTROLS COLUMN === */}
           <div className="flex flex-col gap-6">
-            {/* Card 1: Catégorie */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -452,9 +444,9 @@ export default function Home() {
                   onValueChange={(value: string) => setCategory(value as Category)}
                 >
                   <div>
-                    <RadioGroupItem value="coran" id="coran" className="peer sr-only" />
+                    <RadioGroupItem value="coran" id="studio-coran" className="peer sr-only" />
                     <Label
-                      htmlFor="coran"
+                      htmlFor="studio-coran"
                       className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
                     >
                       <BookMarked className="mb-3 h-6 w-6" />
@@ -462,9 +454,9 @@ export default function Home() {
                     </Label>
                   </div>
                   <div>
-                    <RadioGroupItem value="hadith" id="hadith" className="peer sr-only" />
+                    <RadioGroupItem value="hadith" id="studio-hadith" className="peer sr-only" />
                     <Label
-                      htmlFor="hadith"
+                      htmlFor="studio-hadith"
                       className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
                     >
                       <BookOpen className="mb-3 h-6 w-6" />
@@ -472,9 +464,9 @@ export default function Home() {
                     </Label>
                   </div>
                   <div>
-                    <RadioGroupItem value="ramadan" id="ramadan" className="peer sr-only" />
+                    <RadioGroupItem value="ramadan" id="studio-ramadan" className="peer sr-only" />
                     <Label
-                      htmlFor="ramadan"
+                      htmlFor="studio-ramadan"
                       className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
                     >
                       <Moon className="mb-3 h-6 w-6" />
@@ -482,9 +474,9 @@ export default function Home() {
                     </Label>
                   </div>
                   <div>
-                    <RadioGroupItem value="recherche-ia" id="recherche-ia" className="peer sr-only" />
+                    <RadioGroupItem value="recherche-ia" id="studio-recherche-ia" className="peer sr-only" />
                     <Label
-                      htmlFor="recherche-ia"
+                      htmlFor="studio-recherche-ia"
                       className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
                     >
                       <Search className="mb-3 h-6 w-6" />
@@ -495,11 +487,168 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Card 2: Arrière-plan */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
+                  <RectangleHorizontal className="text-primary" />
+                  Choisir un format
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  defaultValue="story"
+                  className="grid grid-cols-2 gap-4"
+                  onValueChange={(value: string) => setFormat(value as Format)}
+                >
+                  <div>
+                    <RadioGroupItem value="story" id="studio-story" className="peer sr-only" />
+                    <Label
+                      htmlFor="studio-story"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                    >
+                      <RectangleVertical className="mb-3 h-6 w-6" />
+                      Story (9:16)
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem value="square" id="studio-square" className="peer sr-only" />
+                    <Label
+                      htmlFor="studio-square"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                    >
+                      <ImageIcon className="mb-3 h-6 w-6" />
+                      Carré (1:1)
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">3</span>
+                  <Palette className="text-primary" />
+                  Couleur du texte
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  defaultValue="white"
+                  className="grid grid-cols-2 gap-4"
+                  onValueChange={(value: string) => setTextTheme(value as TextTheme)}
+                >
+                  <div>
+                    <RadioGroupItem value="gradient" id="studio-theme-gradient" className="peer sr-only" />
+                    <Label
+                      htmlFor="studio-theme-gradient"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                    >
+                      <span className="mb-3 text-lg font-bold text-hikma-gradient">Aa</span>
+                      TikTok
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem value="white" id="studio-theme-white" className="peer sr-only" />
+                    <Label
+                      htmlFor="studio-theme-white"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                    >
+                      <span className="mb-3 text-lg font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">Aa</span>
+                      Blanc
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">4</span>
+                  <Type className="text-primary" />
+                  Typographie
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <RadioGroup
+                  defaultValue="roboto"
+                  className="grid grid-cols-2 gap-3"
+                  onValueChange={(value: string) => setFontFamily(value as FontFamily)}
+                >
+                  {(Object.entries(fontFamilies) as [FontFamily, typeof fontFamilies[FontFamily]][]).map(([key, font]) => (
+                    <div key={key}>
+                      <RadioGroupItem value={key} id={`studio-font-${key}`} className="peer sr-only" />
+                      <Label
+                        htmlFor={`studio-font-${key}`}
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-primary/10 hover:text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground transition-smooth"
+                      >
+                        <span className="mb-2 text-lg" style={{ fontFamily: font.style }}>Aa</span>
+                        <span className="text-xs">{font.label}</span>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Taille du texte</span>
+                    <span className="text-sm font-medium">{fontSize}px</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(s => Math.max(14, s - 2))}>
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <Slider
+                      value={[fontSize]}
+                      onValueChange={(v) => setFontSize(v[0])}
+                      min={14}
+                      max={48}
+                      step={1}
+                      className="flex-1"
+                    />
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(s => Math.min(48, s + 2))}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">5</span>
+                  <AtSign className="text-primary" />
+                  Signature
+                </CardTitle>
+                <CardDescription>
+                  Ajoutez votre @pseudo ou nom sur l'image.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-2">
+                  <Input
+                    placeholder="Ex: @votre_pseudo"
+                    value={creatorSignature}
+                    onChange={(e) => setCreatorSignature(e.target.value)}
+                    disabled={!user}
+                    className="flex-grow"
+                  />
+                  {!user && (
+                    <p className="text-xs text-muted-foreground">
+                      Connectez-vous pour personnaliser votre propre signature.
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">6</span>
                   <ImageIcon className="text-primary" />
                   Choisir l'arrière-plan
                 </CardTitle>
@@ -507,14 +656,14 @@ export default function Home() {
               <CardContent className="flex items-center gap-4">
                 <input
                   type="file"
-                  id="file-upload"
+                  id="studio-file-upload"
                   onChange={handleFileChange}
                   className="hidden"
                   accept="image/*"
                 />
                 <Button
                   variant="outline"
-                  onClick={() => document.getElementById('file-upload')?.click()}
+                  onClick={() => document.getElementById('studio-file-upload')?.click()}
                   className="flex-1"
                 >
                   <Upload className="mr-2 h-4 w-4" />
@@ -531,11 +680,23 @@ export default function Home() {
           {/* === PREVIEW COLUMN === */}
           <div className="flex flex-col items-center justify-start gap-8">
             <div
-              className="bg-neutral-900 p-2 sm:p-4 shadow-2xl ring-2 ring-primary/20 transition-all duration-300 w-[340px] h-[715px] sm:w-[360px] sm:h-[755px] rounded-[40px]"
+              className={cn(
+                'bg-neutral-900 p-2 sm:p-4 shadow-2xl ring-2 ring-primary/20 transition-all duration-300',
+                {
+                  'w-[340px] h-[715px] sm:w-[360px] sm:h-[755px] rounded-[40px]': format === 'story',
+                  'w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] rounded-2xl': format === 'square',
+                }
+              )}
             >
               <div
                 ref={previewRef}
-                className="relative h-full w-full overflow-hidden bg-black rounded-[25px] sm:rounded-[32px]"
+                className={cn(
+                  'relative h-full w-full overflow-hidden bg-black',
+                  {
+                    'rounded-[25px] sm:rounded-[32px]': format === 'story',
+                    'rounded-xl': format === 'square',
+                  }
+                )}
               >
                 <Image
                   src={background}
@@ -560,7 +721,7 @@ export default function Home() {
                     className="absolute inset-0 flex items-center justify-center p-8"
                   >
                     <div className="text-center w-full max-w-4xl">
-                      <div className="font-extrabold leading-tight tracking-tight px-4" style={{ fontSize: `${fontSize}px`, fontFamily: "'Roboto', sans-serif" }}>
+                      <div className="font-extrabold leading-tight tracking-tight px-4" style={{ fontSize: `${fontSize}px`, fontFamily: fontFamilies[fontFamily].style }}>
                         <AnimatePresence mode="wait">
                           <motion.div
                             key={animationKey + content.content}
@@ -584,7 +745,10 @@ export default function Home() {
                                     transition: { type: 'spring', damping: 12, stiffness: 100 }
                                   },
                                 }}
-                                className="inline-block mr-2 text-white"
+                                className={cn(
+                                  "inline-block mr-2",
+                                  textTheme === 'white' ? "text-white" : (user ? "text-hikma-gradient" : "text-white")
+                                )}
                               >
                                 {word}
                               </motion.span>
@@ -610,11 +774,13 @@ export default function Home() {
                   </div>
                 )}
 
-                <div className="absolute bottom-10 left-0 right-0 text-center">
-                  <p className="text-white/60 text-sm font-medium tracking-widest uppercase">
-                    {creatorSignature}
-                  </p>
-                </div>
+                {creatorSignature && (
+                  <div className="absolute bottom-10 left-0 right-0 text-center">
+                    <p className="text-white/60 text-sm font-medium tracking-widest uppercase">
+                      {creatorSignature}
+                    </p>
+                  </div>
+                )}
 
                 {!content && !isGenerating && (
                   <div className="absolute inset-0 flex items-center justify-center p-8">
@@ -626,11 +792,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Card 3: Générer le contenu */}
             <Card className="w-full max-w-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 mb-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">3</span>
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">7</span>
                   <Sparkles className="text-primary" />
                   Générer le contenu
                 </CardTitle>
@@ -655,11 +820,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Card 4: Exporter & Partager */}
             <Card className="w-full max-w-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">4</span>
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">8</span>
                   <Download className="text-primary" />
                   Exporter & Partager
                 </CardTitle>
@@ -693,48 +857,11 @@ export default function Home() {
                   <Play className="mr-1 h-3 w-3" />
                   Revoir l'animation
                 </Button>
-
-                <div className="pt-4 border-t mt-2">
-                  <a
-                    href="https://drive.google.com/file/d/1FoEnObXjVZSwUC2sl3DvuZAFEPrALVIp/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full block"
-                  >
-                    <Button variant="secondary" className="w-full gap-2">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Android_robot.svg" alt="Android" className="w-4 h-4" />
-                      Télécharger l'application Android
-                    </Button>
-                  </a>
-                </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </main>
-      <footer className="border-t mt-8 py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mb-4">
-            <a href="/privacy-policy" className="hover:text-primary transition-colors">Politique de Confidentialité</a>
-            <span className="hidden sm:inline">·</span>
-            <a href="/terms-of-service" className="hover:text-primary transition-colors">Conditions d'Utilisation</a>
-          </div>
-          <p className="mb-2">
-            © {new Date().getFullYear()} HikmaClips · Créé par{' '}
-            <a
-              href="http://web-linecreator.fr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-primary hover:underline"
-            >
-              web-linecreator.fr
-            </a>
-          </p>
-          <p>
-            Meknès, Maroc
-          </p>
-        </div>
-      </footer>
 
       <AlertDialog open={showSignInPopup} onOpenChange={(open) => {
         setShowSignInPopup(open);

@@ -2,13 +2,13 @@
 
 import { usePathname } from 'next/navigation';
 import { BottomNavigation } from '@/components/BottomNavigation';
-import { Home, BookOpen, Share2, User, Settings } from 'lucide-react';
+import { Home, BookOpen, Share2, Wand2, Settings } from 'lucide-react';
 
 const navItems = [
   { label: 'Accueil', icon: <Home size={22} />, href: '/' },
   { label: 'Ressources', icon: <BookOpen size={22} />, href: '/ressources' },
   { label: 'Partager', icon: <Share2 size={22} />, href: '/partager' },
-  { label: 'Profil', icon: <User size={22} />, href: '/profil' },
+  { label: 'Studio', icon: <Wand2 size={22} />, href: '/studio' },
   { label: 'Paramètres', icon: <Settings size={22} />, href: '/parametres' },
 ];
 
