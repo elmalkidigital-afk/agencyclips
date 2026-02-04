@@ -431,8 +431,8 @@ export default function Home() {
       </header>
       <main className="container mx-auto p-4 sm:p-8 flex-grow">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12">
-          {/* === CONTROLS COLUMN (SIMPLIFIED) === */}
-          <div className="flex flex-col gap-6">
+          {/* === CONTROLS COLUMN (LEFT) === */}
+          <div className="flex flex-col gap-6 order-2 lg:order-1">
             {/* Card 1: Catégorie */}
             <Card>
               <CardHeader>
@@ -448,7 +448,7 @@ export default function Home() {
               <CardContent>
                 <RadioGroup
                   defaultValue="coran"
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                  className="grid grid-cols-2 gap-3"
                   onValueChange={(value: string) => setCategory(value as Category)}
                 >
                   <div>
@@ -526,12 +526,96 @@ export default function Home() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Card 3: Générer le contenu */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">3</span>
+                  <Sparkles className="text-primary" />
+                  Générer le contenu
+                </CardTitle>
+                <CardDescription>
+                  Décrivez un thème (ex. "patience", "nutrition"). Laissez vide pour un thème aléatoire.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <Textarea
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  placeholder="Ex: La patience dans l'épreuve"
+                />
+                <Button onClick={handleGenerateAiContent} disabled={isGenerating} className="w-full" size="lg">
+                  {isGenerating ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  )}
+                  {isGenerating ? 'Génération...' : "Générer le contenu"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Card 4: Exporter & Partager */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">4</span>
+                  <Download className="text-primary" />
+                  Exporter & Partager
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                <Button
+                  onClick={handleDownloadImage}
+                  disabled={!content || isGenerating}
+                  className="w-full"
+                  size="lg"
+                  variant="outline"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Enregistrer l'image
+                </Button>
+                <Button
+                  onClick={handleShareImage}
+                  disabled={!content || isGenerating}
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                  size="lg"
+                >
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Partager maintenant
+                </Button>
+                <Button
+                  onClick={() => setAnimationKey(prev => prev + 1)}
+                  disabled={!content || isGenerating}
+                  variant="ghost"
+                  className="w-full h-8 text-xs text-muted-foreground"
+                >
+                  <Play className="mr-1 h-3 w-3" />
+                  Revoir l'animation
+                </Button>
+
+                <div className="pt-4 border-t mt-2">
+                  <a
+                    href="https://drive.google.com/file/d/1FoEnObXjVZSwUC2sl3DvuZAFEPrALVIp/view?usp=drive_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full block"
+                  >
+                    <Button variant="secondary" className="w-full gap-2">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Android_robot.svg" alt="Android" className="w-4 h-4" />
+                      Télécharger l'application Android
+                    </Button>
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* === PREVIEW COLUMN === */}
-          <div className="flex flex-col items-center justify-start gap-8">
+          {/* === PREVIEW COLUMN (RIGHT - STICKY) === */}
+          <div className="flex flex-col items-center order-1 lg:order-2 lg:sticky lg:top-8 lg:self-start">
             <div
-              className="bg-neutral-900 p-2 sm:p-4 shadow-2xl ring-2 ring-primary/20 transition-all duration-300 w-[340px] h-[715px] sm:w-[360px] sm:h-[755px] rounded-[40px]"
+              className="bg-neutral-900 p-2 sm:p-4 shadow-2xl ring-2 ring-primary/20 transition-all duration-300 w-[280px] h-[590px] sm:w-[320px] sm:h-[673px] lg:w-[340px] lg:h-[715px] rounded-[40px]"
             >
               <div
                 ref={previewRef}
@@ -625,90 +709,6 @@ export default function Home() {
                 )}
               </div>
             </div>
-
-            {/* Card 3: Générer le contenu */}
-            <Card className="w-full max-w-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 mb-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">3</span>
-                  <Sparkles className="text-primary" />
-                  Générer le contenu
-                </CardTitle>
-                <CardDescription>
-                  Décrivez un thème (ex. "patience", "nutrition"). Laissez vide pour un thème aléatoire.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <Textarea
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Ex: La patience dans l'épreuve"
-                />
-                <Button onClick={handleGenerateAiContent} disabled={isGenerating} className="w-full" size="lg">
-                  {isGenerating ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-2 h-4 w-4" />
-                  )}
-                  {isGenerating ? 'Génération...' : "Générer le contenu"}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Card 4: Exporter & Partager */}
-            <Card className="w-full max-w-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">4</span>
-                  <Download className="text-primary" />
-                  Exporter & Partager
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3">
-                <Button
-                  onClick={handleDownloadImage}
-                  disabled={!content || isGenerating}
-                  className="w-full"
-                  size="lg"
-                  variant="outline"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Enregistrer l'image
-                </Button>
-                <Button
-                  onClick={handleShareImage}
-                  disabled={!content || isGenerating}
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  size="lg"
-                >
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Partager maintenant
-                </Button>
-                <Button
-                  onClick={() => setAnimationKey(prev => prev + 1)}
-                  disabled={!content || isGenerating}
-                  variant="ghost"
-                  className="w-full h-8 text-xs text-muted-foreground"
-                >
-                  <Play className="mr-1 h-3 w-3" />
-                  Revoir l'animation
-                </Button>
-
-                <div className="pt-4 border-t mt-2">
-                  <a
-                    href="https://drive.google.com/file/d/1FoEnObXjVZSwUC2sl3DvuZAFEPrALVIp/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full block"
-                  >
-                    <Button variant="secondary" className="w-full gap-2">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Android_robot.svg" alt="Android" className="w-4 h-4" />
-                      Télécharger l'application Android
-                    </Button>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>
