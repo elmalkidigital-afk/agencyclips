@@ -675,8 +675,8 @@ export default function GeneratorPage() {
                   </div>
                 )}
 
-                <div className="absolute bottom-10 left-0 right-0 text-center">
-                  <p className="text-white/60 text-sm font-medium tracking-widest uppercase">
+                <div className="absolute bottom-3 left-3">
+                  <p className="text-white/40 text-[10px] font-medium tracking-wide">
                     {creatorSignature}
                   </p>
                 </div>
